@@ -13,8 +13,11 @@
 #define COMMAND_DELETE_CAR "rottama-auto"
 #define COMMAND_PATH "pianifica-percorso"
 
-/*VERSIONE 3*/
-
+/*
+ *  ---------------------------------------------------------------
+ *  ---------------- Data Type Definitions ------------------------
+ *  ---------------------------------------------------------------
+ */
 typedef struct elem {
     int dist;
     struct elem *next;
@@ -40,6 +43,13 @@ typedef struct node {
 } Node;
 
 typedef Node* PtrNode;
+
+
+/*
+ *  ---------------------------------------------------------------
+ *  ---------------- Function Declarations ------------------------
+ *  ---------------------------------------------------------------
+ */
 
 //Parking handling
 void add_car(int distance, int autonomy, Node *root);
@@ -70,12 +80,16 @@ Elem* add_element(Elem *l, int data);
 Elem* delete_list(Elem *l);
 void print_list(Elem *l);
 
-// Main ----------------------------------------------------------------------------------------
+
+/*
+ *  ---------------------------------------------------------------
+ *  ---------------------------  Main  ----------------------------
+ *  ---------------------------------------------------------------
+ */  
+
 int main() {
-    //clock_t begin = clock();
     FILE *file_input;
     file_input = stdin;
-    //file_input = fopen("archivio_test_aperti/open_108.txt", "r");
     if(file_input == NULL){
         printf("File not found \n");
         exit(1);
@@ -119,12 +133,17 @@ int main() {
     }
 
     fclose(file_input);
-    //clock_t end = clock();
-    //printf("The elapsed time is %f seconds\n", (double)(end - begin) / CLOCKS_PER_SEC);
     return 0;
 }
 
-//Station Handling -----------------------------------------------------------------------------
+
+
+/*
+ *  ---------------------------------------------------------------
+ *  ------------------- Station Handling --------------------------
+ *  ----------------- Function Definitions ------------------------
+ *  ---------------------------------------------------------------
+*/
 
 Node* create_station(int distance, int numberCar, int *cars, Node *root){
     if(tree_search(root, distance)!=NULL || numberCar < 0){
@@ -168,7 +187,14 @@ Station* find_station(int distance, Node *root){
     return &(tree_search(root, distance)->station);
 }
 
-//Parking Handling -----------------------------------------------------------------------------
+
+
+/*
+ *  ---------------------------------------------------------------
+ *  ------------------- Parking Handling --------------------------
+ *  ----------------- Function Definitions ------------------------
+ *  ---------------------------------------------------------------
+*/
 
 void create_parking(int *cars, Station *station){
     int max;
@@ -240,7 +266,13 @@ void scrap_car(int distance, int autonomy, Node *root){
     }
 }
 
-// Path ---------------------------------------------------------------------------------------
+
+/*
+ *  ---------------------------------------------------------------
+ *  --------------------- Shortest Path ---------------------------
+ *  ----------------- Function Definitions ------------------------
+ *  ---------------------------------------------------------------
+*/
 
 void shortest_path_dx(Node *root, int start, int end){
     int size;
@@ -271,7 +303,8 @@ void shortest_path_dx(Node *root, int start, int end){
     arr = NULL;
 }
 
-void shortest_path_sx(Node *root, int start, int end){ //TO-DO
+
+void shortest_path_sx(Node *root, int start, int end){
     int *dist, *p;
     int size = 0;
     Data *arr = get_desc_order_vector(root, &size, end, start);
@@ -332,6 +365,7 @@ void shortest_path_sx(Node *root, int start, int end){ //TO-DO
     arr = NULL;
 }
 
+
 void plan_route(Node *root, int start, int end){
     if(start == end){
         printf("%d\n", start);
@@ -343,7 +377,14 @@ void plan_route(Node *root, int start, int end){
     }
 }
 
-//BST Functions -------------------------------------------------------------------------------
+
+
+/*
+ *  ---------------------------------------------------------------
+ *  --------------------- BST Handling ----------------------------
+ *  ----------------- Function Definitions ------------------------
+ *  ---------------------------------------------------------------
+*/
 
 Node* tree_insert(Node *newNode, Node *root){
     if(root == NULL) //if bst is empty
@@ -366,11 +407,13 @@ Node* tree_insert(Node *newNode, Node *root){
     return res;
 }
 
+
 Node* tree_minimum(Node *root){
     while(root->left != NULL)
         root = root->left;
     return root;
 }
+
 
 Node* transplant(Node *root, Node *u, Node *v){
     if(u->father == NULL)
@@ -382,6 +425,7 @@ Node* transplant(Node *root, Node *u, Node *v){
         v->father = u->father;
     return root;
 }
+
 
 Node* tree_delete(Node *root, Node *z){
     if(z->left == NULL)
@@ -404,6 +448,7 @@ Node* tree_delete(Node *root, Node *z){
     return root;
 }
 
+
 Node* tree_search(Node *root, int distance){
     while(root != NULL && distance != root->station.distance){
         if (distance < root->station.distance)
@@ -413,7 +458,10 @@ Node* tree_search(Node *root, int distance){
     return root;
 }
 
-Data* get_inorder_vector(Node *root, int *size, int min, int max){ //** means pointer to a pointer
+/*
+ * A BST in-order traversal without recursion or a stack (just for fun!)
+ */
+Data* get_inorder_vector(Node *root, int *size, int min, int max){ 
     Node *pre, * current;
     Data *v = NULL;
     int added;
@@ -443,7 +491,6 @@ Data* get_inorder_vector(Node *root, int *size, int min, int max){ //** means po
                     }
                 }
             }
-            //printf(" %d", current->station.distance);
             current = current->right;
         } else {
             pre = current->left;
@@ -478,6 +525,9 @@ Data* get_inorder_vector(Node *root, int *size, int min, int max){ //** means po
     return v;
 }
 
+/*
+ * A BST inverse in-order traversal without recursion or a stack (just for fun!)
+ */
 Data* get_desc_order_vector(Node *root, int *size, int min, int max) {
     Node *pre, * current;
     Data *v = NULL;
@@ -509,7 +559,6 @@ Data* get_desc_order_vector(Node *root, int *size, int min, int max) {
                     }
                 }
             }
-            //printf(" %d", current->station.distance);
             current = current->left;
         } else {
             pre = current->right;
@@ -537,7 +586,6 @@ Data* get_desc_order_vector(Node *root, int *size, int min, int max) {
                         }
                     }
                 }
-                //printf(" %d", current->station.distance);
                 current = current->left;
             }
         }
@@ -546,7 +594,13 @@ Data* get_desc_order_vector(Node *root, int *size, int min, int max) {
 }
 
 
-//List Function----------------------------------------------------------------------------------------
+/*
+ *  ---------------------------------------------------------------
+ *  -------------------- List Handling ----------------------------
+ *  ----------------- Function Definitions ------------------------
+ *  ---------------------------------------------------------------
+*/
+
 Elem* add_element(Elem *l, int data) {
     Elem *tmp;
     tmp = malloc(sizeof(Elem));
@@ -562,6 +616,7 @@ Elem* add_element(Elem *l, int data) {
     }
 }
 
+
 Elem* delete_list(Elem *l) {
     Elem *tmp;
     while(l != NULL){
@@ -571,6 +626,7 @@ Elem* delete_list(Elem *l) {
     }
     return NULL;
 }
+
 
 void print_list(Elem *l){
     if(l == NULL) {
